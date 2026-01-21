@@ -189,7 +189,9 @@ int main(void) {
             DrawPolygonalChain(&control_chain, CONTROL_COLOR);
             if (control_chain.length > 1 && t > 0.0f) {
                 const Vector2 point = DrawDeCasteljau(&control_chain, t, 0);
-                Vector2Array_Append(&trace, point);
+                if (!is_paused) {
+                    Vector2Array_Append(&trace, point);
+                }
                 DrawTrace(&trace);
             }
         EndDrawing();
