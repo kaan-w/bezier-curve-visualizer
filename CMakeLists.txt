@@ -5,14 +5,14 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
-find_package(raylib QUIET)
+include(CheckIncludeFile)
+include(FetchContent)
 
 add_executable(${PROJECT_NAME} src/main.c)
 
-if(raylib_FOUND)
-    target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
-else()
-    include(FetchContent)
+find_package(raylib QUIET)
+if(NOT raylib_FOUND)
+    message(STATUS "Couldn't find raylib, fetching...")
 
     FetchContent_Declare(
         raylib
@@ -21,6 +21,16 @@ else()
         GIT_SHALLOW TRUE
     )
     FetchContent_MakeAvailable(raylib)
+else()
+    message(STATUS "Found raylib")
+endif()
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+
+set(CMAKE_REQUIRED_QUIET TRUE)
+check_include_file(raygui.h raygui_FOUND)
+unset(CMAKE_REQUIRED_QUIET)
+if(NOT raygui_FOUND)
+    message(STATUS "Couldn't find raygui, fetching...")
 
     FetchContent_Declare(
         raygui
@@ -29,7 +39,10 @@ else()
         GIT_SHALLOW TRUE
     )
     FetchContent_MakeAvailable(raygui)
-    target_link_libraries(${PROJECT_NAME} PRIVATE raylib)
+
+    target_include_directories(${PROJECT_NAME} PRIVATE ${raygui_SOURCE_DIR}/src)
+else()
+    message(STATUS "Found raygui")
 endif()
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
