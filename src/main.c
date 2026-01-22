@@ -185,7 +185,6 @@ int main(void) {
                 }
             }
 
-            DrawUI();
             DrawPolygonalChain(&control_chain, CONTROL_COLOR);
             if (control_chain.length > 1 && t > 0.0f) {
                 const Vector2 point = DrawDeCasteljau(&control_chain, t, 0);
@@ -194,6 +193,7 @@ int main(void) {
                 }
                 DrawTrace(&trace);
             }
+            DrawUI();
         EndDrawing();
     }
 
